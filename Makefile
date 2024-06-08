@@ -1,34 +1,59 @@
-CC=avr-gcc
-CFLAGS=-Wall -Wextra -Werror
+.SECONDARY: # all targets are treated as secondary files
 
-OBJCOPY=avr-objcopy
-FLASH=avrdude
-FLASH_PORT=/dev/ttyUSB0
-
-CLOCK=16000000
-MMCU=atmega328p
-
+# Dirs
 SRC_DIR=src
 BUILD_DIR=build
+OBJ_DIR=$(BUILD_DIR)/obj
+BIN_DIR=$(BUILD_DIR)/bin
+HEX_DIR=$(BUILD_DIR)/hex
 
-ifndef arg
-	$(error Please provide the 'arg=example_name')
-endif
+# Toolchain
+CC=avr-gcc
+OBJCOPY=avr-objcopy
+FLASH=avrdude
 
-file:
-	$(if $(wildcard ($(SRC_DIR)/$(arg).c)),\
-		$(error File $(SRC_DIR)/$(arg).c does not exist))
-	@mkdir -p $(BUILD_DIR)/$(arg)
-	$(CC) $(CFLAGS) -Os -DF_CPU=$(CLOCK) -mmcu=$(MMCU) -c -o $(BUILD_DIR)/$(arg)/$(arg).o $(SRC_DIR)/$(arg).c
-	$(CC) $(CFLAGS) -mmcu=$(MMCU) -o $(BUILD_DIR)/$(arg)/$(arg).bin $(BUILD_DIR)/$(arg)/$(arg).o
-	$(OBJCOPY) -O ihex -R .eeprom $(BUILD_DIR)/$(arg)/$(arg).bin $(BUILD_DIR)/$(arg)/$(arg).hex
+# Files
+SOURCES=$(wildcard $(SRC_DIR)/*.c)
+TARGETS=$(patsubst $(SRC_DIR)/%.c, %, $(SOURCES))
+OBJECTS=$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
+BINS=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.bin, $(SOURCES))
+HEXES=$(patsubst $(SRC_DIR)/%.c, $(HEX_DIR)/%.hex, $(SOURCES))
 
-flash:
-	$(if $(wildcard ($(BUILD_DIR)/$(arg)/$(arg).hex)),\
-		$(error Hex file $(BUILD_DIR)/$(arg)/$(arg).hex does not exist))
-	sudo $(FLASH) -F -V -c arduino -p ATMEGA328P -P $(FLASH_PORT) -b 115200 -U flash:w:$(BUILD_DIR)/$(arg)/$(arg).hex
+# Flags
+CLOCK=16000000
+MCU=atmega328p
 
-clear:
-	$(if $(wildcard ($(BUILD_DIR)/$(arg)/$(arg).hex)),\
-		$(error Folder $(BUILD_DIR)/$(arg) does not exist))
-	@rm -rf $(BUILD_DIR)/$(arg)
+WARNING_FLAGS=-Wall -Wextra -Werror -Wshadow
+CFLAGS=-Os -mmcu=$(MCU) -DF_CPU=$(CLOCK) $(WARNING_FLAGS)
+LFLAGS=-mmcu=$(MCU) $(WARNING_FLAGS)
+HEXFLAGS=-O ihex -R .eeprom
+
+FLASH_PORT=/dev/ttyUSB0
+FLASH_FLAGS=-F -V -c arduino -p ATMEGA328P -P $(FLASH_PORT) -b 115200
+
+# Build
+## Hex-format
+$(HEXES): $(BINS)
+	@mkdir -p $(dir $@)
+	$(OBJCOPY) $(HEXFLAGS) $^ $@
+
+## Linker
+$(BIN_DIR)/%.bin: $(OBJECTS)
+	@mkdir -p $(dir $@)
+	$(CC) $(LFLAGS) -o $@ $^
+
+## Compiler
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+# Phonies
+.PHONY: all clean flash
+
+all: $(HEXES)
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+$(TARGETS): $(HEXES)
+	sudo $(FLASH) $(FLASH_FLAGS) -U flash:w:$(HEX_DIR)/$@.hex
