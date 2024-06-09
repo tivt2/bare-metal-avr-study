@@ -18,5 +18,15 @@ Additionally, the MCU introduces a concept known as pin multiplexing. In many MC
 
 For example, a GPIO pin may be used as a digital input in one configuration, but it can also be configured to serve as the clock input for a timer/counter peripheral in another configuration. The multiplexer allows the MCU to dynamically allocate pin functionality, providing flexibility in utilizing the limited number of GPIO pins available on the chip.
 
+## GPIO polling
+
+The idea of GPIO polling is such as we monitor the state of a input pin. This technique the MCU constantly checks the state of the pin that was configured as an input pin, this makes the MCU have direct access to a hardware device where it can check its state during code execution.
+
+One limitation of GPIO polling is that it may introduce latency in the system where real-time responses to hardware events are necessary, in those cases we can use interrupt signals to achieve a more time-sensitive approach.
+
+A disavantage of GPIO polling compared to an interrupt system is the consumption of CPU cycles every time the pin value needs to be checked. In some sense GPIO polling is "slow" if compared to a system that levarages interrupt signal to change the program execution. In counter part GPIO polling makes the program deterministic and predictable.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
+
+- 2_button_polling: Here we setup a button and a LED, where when the button is pressed the LED lights up, to achieve this we use a technique called GPIO polling.
