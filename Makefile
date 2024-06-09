@@ -14,10 +14,10 @@ FLASH=avrdude
 
 # Files
 SOURCES=$(wildcard $(SRC_DIR)/*.c)
-TARGETS=$(patsubst $(SRC_DIR)/%.c, %, $(SOURCES))
 OBJECTS=$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 BINS=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.bin, $(SOURCES))
 HEXES=$(patsubst $(SRC_DIR)/%.c, $(HEX_DIR)/%.hex, $(SOURCES))
+TARGETS=$(patsubst $(SRC_DIR)/%.c, %, $(SOURCES))
 
 # Flags
 CLOCK=16000000
@@ -47,13 +47,14 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $^
 
+# Flashing
+$(TARGETS): $(HEXES)
+	sudo $(FLASH) $(FLASH_FLAGS) -U flash:w:$(HEX_DIR)/$@.hex
+
 # Phonies
-.PHONY: all clean flash
+.PHONY: all clean
 
 all: $(HEXES)
 
 clean:
 	$(RM) -r $(BUILD_DIR)
-
-$(TARGETS): $(HEXES)
-	sudo $(FLASH) $(FLASH_FLAGS) -U flash:w:$(HEX_DIR)/$@.hex
