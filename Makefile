@@ -17,7 +17,7 @@ SOURCES=$(wildcard $(SRC_DIR)/*.c)
 OBJECTS=$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 BINS=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.bin, $(SOURCES))
 HEXES=$(patsubst $(SRC_DIR)/%.c, $(HEX_DIR)/%.hex, $(SOURCES))
-TARGETS=$(patsubst $(SRC_DIR)/%.c, %, $(SOURCES))
+BASENAMES=$(basename $(notdir $(SOURCES)))
 
 # Flags
 CLOCK=16000000
@@ -31,26 +31,6 @@ HEXFLAGS=-O ihex -R .eeprom
 FLASH_PORT=/dev/ttyUSB0
 FLASH_FLAGS=-F -V -c arduino -p ATMEGA328P -P $(FLASH_PORT) -b 115200
 
-# Build
-## Hex-format
-$(HEXES): $(BINS)
-	@mkdir -p $(dir $@)
-	$(OBJCOPY) $(HEXFLAGS) $^ $@
-
-## Linker
-$(BIN_DIR)/%.bin: $(OBJECTS)
-	@mkdir -p $(dir $@)
-	$(CC) $(LFLAGS) -o $@ $^
-
-## Compiler
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $^
-
-# Flashing
-$(TARGETS): $(HEXES)
-	sudo $(FLASH) $(FLASH_FLAGS) -U flash:w:$(HEX_DIR)/$@.hex
-
 # Phonies
 .PHONY: all clean
 
@@ -58,3 +38,23 @@ all: $(HEXES)
 
 clean:
 	$(RM) -r $(BUILD_DIR)
+
+# Build
+## Hex-format
+$(HEX_DIR)/%.hex: $(BIN_DIR)/%.bin
+	@mkdir -p $(dir $@)
+	$(OBJCOPY) $(HEXFLAGS) $< $@
+
+## Linker
+$(BIN_DIR)/%.bin: $(OBJ_DIR)/%.o
+	@mkdir -p $(dir $@)
+	$(CC) $(LFLAGS) $< -o $@
+
+## Compiler
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Flashing
+$(BASENAMES): $(HEXES)
+	sudo $(FLASH) $(FLASH_FLAGS) -U flash:w:$(HEX_DIR)/$@.hex
