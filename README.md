@@ -26,7 +26,17 @@ One limitation of GPIO polling is that it may introduce latency in the system wh
 
 A disavantage of GPIO polling compared to an interrupt system is the consumption of CPU cycles every time the pin value needs to be checked. In some sense GPIO polling is "slow" if compared to a system that levarages interrupt signal to change the program execution. In counter part GPIO polling makes the program deterministic and predictable.
 
+## Interrupts
+
+Interrupt functionality allows us to pause the current execution of the program and execute a subroutine predefined in the Interrupt Vector Table (IVT), these interrupt subroutines are stored in the table when we setup/flash the firmware of the MCU.
+
+This functionality can be achieved in several ways: by using pins configured to trigger interrupt signals upon meeting specific conditions, such as a rising edge(going from HIGH to LOW), by setting the MCU to trigger interrupts at regular intervals using internal timers that count clock cycles, or by configuring peripherals to trigger an interrupt when they complete a specific task, such as finishing a data transfer or completing an ADC conversion.
+
+These methods enable the MCU to respond to external and internal events in real-time, enhancing its flexibility and performance in handling various tasks.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
 
 - 2_button_polling: Here we setup a button and a LED, where when the button is pressed the LED lights up, to achieve this we use a technique called GPIO polling.
+
+- 3_interrupt: In this example we flicker an LED slowly, we also setup and utilize an external interrupt in order to trigger a routine that flickers an led faster 10 times.

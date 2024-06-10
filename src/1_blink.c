@@ -32,8 +32,9 @@ int main(void) {
 		 */
 		IO_PIN(0x05) ^= (1 << 5);
 
-		/* A simple NOP loop to simulate a delay */
-		for (long int i = 2000000; i > 0; i--) {
+		/* A simple NOP loop to simulate a delay, we declare the i variable as
+		 * volitile just so the compiler doesn't optimize it */
+		for (volatile long int i = 500000; i > 0; i--) {
 		}
 	}
 
