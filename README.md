@@ -34,9 +34,21 @@ This functionality can be achieved in several ways: by using pins configured to 
 
 These methods enable the MCU to respond to external and internal events in real-time, enhancing its flexibility and performance in handling various tasks.
 
+## Timers
+
+The timer/counter peripheral is a piece of hardware that increments a register based on an input clock cycle, which can be prescaled by the timer itself. This means that the timer can derive its clock from the CPU clock or an external clock source. When using the CPU clock, the timer operates synchronously with the CPU, ensuring reliable timing and event scheduling.
+
+The timer is essentially a counter combined with a comparator. It functions similarly to an Arithmetic Logic Unit (ALU) in that it can compare the current count value with a predefined value. If the current count matches the configured condition, the counter triggers a specific action. For this create this conditions it operates around 3 main values, the BOTTOM value(normaly 0), the current count and the TOP value, that can be either the maximum value or a preset value.
+
+There are three main output actions that can be configured when a timer reaches its condition: toggle a pin, clear a pin, and set a pin. In addition to controlling pin states, the timer can trigger interrupt signals under certain conditions. This capability allows the timer to generate precise time-based events or perform specific tasks at regular intervals, making it a powerful tool.
+
+A timer also have multiple modes of operation, making it possible to operate its output as a PWM signal.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
 
 - 2_button_polling: Here we setup a button and a LED, where when the button is pressed the LED lights up, to achieve this we use a technique called GPIO polling.
 
 - 3_interrupt: In this example we flicker an LED slowly, we also setup and utilize an external interrupt in order to trigger a routine that flickers an led faster 10 times.
+
+- 4_timers: A timer is configured to toggle a pin connected to an LED, where it will blink it every second.
