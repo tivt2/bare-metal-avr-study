@@ -50,6 +50,14 @@ A PWM (Pulse Width Modulation) signal is a digital signal that alternates betwee
 
 In the ATmega328P, we can create PWM signals using the timer peripheral, which can be configured in either Fast PWM Mode or Phase Correct PWM Mode. In Fast PWM Mode, the timer counts up until it reaches the TOP value and then resets to the BOTTOM, repeating this process. In Phase Correct PWM Mode, the timer counts up until it reaches the TOP value, then reverses direction and counts down back to the BOTTOM. This mode, as the name indicates, provides more precision, allowing for finer control over the PWM signal.
 
+## ADC(Analog to Digital Converter)
+
+The ADC peripheral in the ATmega328P converts analog signals into digital signals, allowing us to process them within our program. The ADC works by using a reference voltage and measuring the potential difference between this reference voltage and the input voltage. This difference is then converted into a digital value, with a resolution of up to 10 bits in the case of the ATmega328P. This conversion process is handled entirely by the hardware.
+
+To achieve accurate and reliable ADC readings, we must configure the ADC correctly. One key configuration is setting the prescaler value, which determines the division factor for the system clock to produce the ADC clock. The prescaler ensures that the ADC operates within an optimal frequency range, balancing conversion speed and precision.
+
+The ADC can operate in different modes. It can perform continuous conversions, repeatedly converting the analog input without interruption, or it can be configured to start a conversion only when a specific flag is set. Additionally, the ADC can trigger an interrupt when a conversion completes or other specified conditions are met.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
 
@@ -59,4 +67,6 @@ In the ATmega328P, we can create PWM signals using the timer peripheral, which c
 
 - 4_timers: A timer is configured to toggle a pin connected to an LED, where it will blink it every second.
 
-- 5_pwm:
+- 5_pwm: Utilizing the 8-bit timer to generate a PWM signal and fade in/out an LED.
+
+- 6_adc: Reading the analog input from a potentiometer and with it controlling the PWM duty cycle, this PWM signal controls a LED brightness.
