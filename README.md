@@ -44,6 +44,12 @@ There are three main output actions that can be configured when a timer reaches 
 
 A timer also have multiple modes of operation, making it possible to operate its output as a PWM signal.
 
+## PWM
+
+A PWM (Pulse Width Modulation) signal is a digital signal that alternates between HIGH and LOW states. The rapid changes between these states allow us to control the duration of cycles that stay HIGH and the amount of time they stay LOW, effectively modulating the output to simulate an analog signal. The proportion of time the signal remains in each state is called the duty cycle.
+
+In the ATmega328P, we can create PWM signals using the timer peripheral, which can be configured in either Fast PWM Mode or Phase Correct PWM Mode. In Fast PWM Mode, the timer counts up until it reaches the TOP value and then resets to the BOTTOM, repeating this process. In Phase Correct PWM Mode, the timer counts up until it reaches the TOP value, then reverses direction and counts down back to the BOTTOM. This mode, as the name indicates, provides more precision, allowing for finer control over the PWM signal.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
 
@@ -52,3 +58,5 @@ A timer also have multiple modes of operation, making it possible to operate its
 - 3_interrupt: In this example we flicker an LED slowly, we also setup and utilize an external interrupt in order to trigger a routine that flickers an led faster 10 times.
 
 - 4_timers: A timer is configured to toggle a pin connected to an LED, where it will blink it every second.
+
+- 5_pwm:
