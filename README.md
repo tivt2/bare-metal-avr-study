@@ -58,6 +58,14 @@ To achieve accurate and reliable ADC readings, we must configure the ADC correct
 
 The ADC can operate in different modes. It can perform continuous conversions, repeatedly converting the analog input without interruption, or it can be configured to start a conversion only when a specific flag is set. Additionally, the ADC can trigger an interrupt when a conversion completes or other specified conditions are met.
 
+## UART(Universal Asynchronous Receiver/Transmitter)
+
+The UART is a peripheral that enables asynchronous communication between two devices. Unlike synchronous communication protocols that rely on paired clock cycles, the UART protocol uses a start bit and a stop bit to signal the beginning and end of data transmission.
+
+Since it relies on the baud rate, UART communication can be slower compared to other protocols like SPI and I2C, but it compensates with simplicity and makes it ideal for compact and easy to use data transfer.
+
+UART is especially useful for communication between components that do not share other communication protocols, as it only requires two wires, one for transmiting and one for receiving, this minimal wiring requirement makes it a versatile choice for various applications where simplicity and ease of use are necessary.
+
 ## Examples
 - 1_blink: This is the classic blink LED example, MCUs normaly have multiplexer systems so the pins of the MCU can be shared depending on the internal peripheral that is interacting with it or the CPU.
 
@@ -70,3 +78,5 @@ The ADC can operate in different modes. It can perform continuous conversions, r
 - 5_pwm: Utilizing the 8-bit timer to generate a PWM signal and fade in/out an LED.
 
 - 6_adc: Reading the analog input from a potentiometer and with it controlling the PWM duty cycle, this PWM signal controls a LED brightness.
+
+- 7_uart: In this example we read the analog signal from a potentiometer and transmit it utilizing the UART protocol.
