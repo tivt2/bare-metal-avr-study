@@ -4,6 +4,12 @@ This is a learning exploration on how to code bare-metal using the C language an
 
 This project will be separated into enumerated concepts with its corresponding example, where each example is built individualy, the build system is a simple makefile utilizing the avr-toolchain to compile and flash to the mcu.
 
+## Build
+
+To build the examples call `make` or `make all`.
+
+To flash the compiled examples to the ATmega328P you do it by calling `make example_name`, something like `make 1_blink`, but first make sure that the **FLASH_PORT** variable in the make file is correct for your system.
+
 ## GPIO
 
 In MCUs like the ATmega328P, GPIO (General-Purpose Input/Output) pins are components that interfaces with external devices, each GPIO pin can be configured as either an input or an output, and this data direction controled by the Data Direction Register (DDR) that lives only in software.
