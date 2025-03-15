@@ -1,8 +1,28 @@
 # AVR(ATmega328P) bare-metal
 
-This is a learning exploration on how to code bare-metal using the C language and also learn about MCUs using the AVR(ATmega328P), most of the information used in the learning process comes from the [ATmega328P datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). Keep in mind that this is just a "learning diary".
+## Overview
 
-This project will be separated into enumerated concepts with its corresponding example, where each example is built individualy, the build system is a simple makefile utilizing the avr-toolchain to compile and flash to the mcu.
+This is a learning exploration on bare metal, microcontrollers and all the tools used to achieve embeeded bare metal programming, from the C language, Makefile, to how the ATmega328P works internaly, most of the information used in the learning process comes from the [ATmega328P datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf).
+
+A arduino uno knock off will be used during the development of this study, this project will be separated into enumerated examples, where each example is built individualy and touches one or more subjects.
+
+In order to develop the files and flash to the MCU, we will need to use the avr-toolchain to help compile, generate the hex files and flash to the MCU, it consists on installing some packages that will help us with that.
+
+```sh
+sudo apt-get update
+sudo apt-get install gcc build-essential
+sudo apt-get install gcc-avr binutils-avr avr-libc gdb-avr
+sudo apt-get install avrdude
+```
+
+Also since i will be using WSL2 as my development environment, we need to attach into WSL the usb port of the ATmega328P, to do this `usbipd` will be used.
+
+```powershell
+winget install usbipd
+```
+
+To correctly attach the ATmega328P USB to the WSL2 we will need to `usbipd bind` and `usbipd attach` first in windows so that our WSL can see the connected USB, for this we can follow the [usbipd wiki](https://github.com/dorssel/usbipd-win/wiki/WSL-support).
+
 
 ## Build
 
@@ -86,3 +106,31 @@ UART is especially useful for communication between components that do not share
 - 6_adc: Reading the analog input from a potentiometer and with it controlling the PWM duty cycle, this PWM signal controls a LED brightness.
 
 - 7_uart: In this example we read the analog signal from a potentiometer and transmit it utilizing the UART protocol.
+
+
+
+## Examples
+
+The header file *avr_atmega328p.h* have some quality of life macros to help code the programs of this project.
+
+- ### 1_blink
+  The 'hello world' of embeeded programming, but since this is a bare metal approach we need to manipulate the registers directly to control the built-in LED and make it blink.
+
+  Since im using an Arduino UNO knock off, we can find the arduino micro-controller [pinout diagram](https://content.arduino.cc/assets/Pinout-UNOrev3_latest.pdf#page=1) and search for which pin is responsible for controlling the builtin LED, in this case its the *PB5* pin. But how can we control the PB5 pin, for this we must understand about GPIO and learn a little about the ATmega328P.
+
+  GPIO is short for *general-purpose input/output* and we can read more about it at [wikipedia](https://en.wikipedia.org/wiki/General-purpose_input/output).
+
+  From what i understand, GPIO pins are provided by the MCU with a general-purpose function, meaning we can configure them for different use cases. On the Arduino UNO board, the PB5 pin of the ATmega328P CPU is a GPIO and is used to control the built-in LED.
+
+  In the ATmega328P data sheet we can find information about it at section [I/O-Ports](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=58). Here it states that there are 3 separated registers responsible for controlling each GPIO pin of the MCU and they are DDRx, PORTxn and PINxn, where 'x' represents the numbering letter for the port and 'n' represents the bit number.
+
+  The DDRx is responsible for selecting the direction of a GPIO pin, it can be either input or output.
+  The PORTxn is the data register, it controls what data is the pin receiving or providing.
+  The PINxn is the input pin, from what i understand it is where we read the data when the pin is set as input.
+
+  We can now continue with the example, in order to blink the built-in LED (PB5), we must first find the registers that control this pin, since the pin in question is the *PB5* we know that the corresponding DDRx, PORTxn and PINxn will be DDRB, PORTB5 and PINB5. Now searching at the data sheet we can find the [register description](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=72) where we find the address of each of these registers, PINB5 is the bit 5 of PINB(address 0x23), DDB5 is the bit 5 of DDRB(address 0x24) and PORTB5 is the bit 5 of the PORTB(address 0x25).
+
+  Ok, after understanding more about the ATmega328P we can now code some C, more info inside *1_blink.c*.
+
+- ### 2_button_polling
+  Following up, what about using a button to light up a LED. To expand on this example we will build a simple circuit consisting on a button, LED and resistor to correctly setup the LED.

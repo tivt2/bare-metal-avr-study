@@ -1,4 +1,4 @@
-.SECONDARY: # all targets are treated as secondary files
+.SECONDARY: # all intermediary targets are treated as secondary files
 
 # Dirs
 SRC_DIR=src
@@ -32,6 +32,7 @@ FLASH_PORT=/dev/ttyUSB0
 FLASH_FLAGS=-F -V -c arduino -p ATMEGA328P -P $(FLASH_PORT) -b 115200
 
 # Phonies
+# mark phonies as commands even if there is files with same name
 .PHONY: all clean
 
 all: $(HEXES)
@@ -40,6 +41,15 @@ clean:
 	$(RM) -r $(BUILD_DIR)
 
 # Build
+
+# (target): [prerequisite...]
+# 	command execution
+
+# $@ = target
+# $< = first prerequisite
+# $^ = prerequisite...
+# https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html#Automatic-Variables
+
 ## Hex-format
 $(HEX_DIR)/%.hex: $(BIN_DIR)/%.bin
 	@mkdir -p $(dir $@)
