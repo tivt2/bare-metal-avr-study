@@ -137,6 +137,8 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
 
   Since im still learning eletronics, we can take a look at the Arduino built-in examples to guide us on this simple circuits, [button example](https://docs.arduino.cc/built-in-examples/digital/Button/) shows how we can use the PD2 to receive signals of the push down button. For the LED part of the circuit, we could use the built-in LED, but instead let's create a separated LED circuit and connect it to PD7, a circuit example could be found [here](https://docs.arduino.cc/built-in-examples/digital/BlinkWithoutDelay/) just adapt it to PD7.
 
+  ![button polling circuit](images/2_button_polling.png)
+
   To correctly read input signals from the button, we must understand pull-up and pull-down resistors, here is a description on [wikipedia](https://en.wikipedia.org/wiki/Pull-up_resistor#:~:text=In%20electronic%20logic%20circuits%2C%20a,absence%20of%20a%20driving%20signal.).
 
   From my understanding, a pull-up or pull-down resistor solves an issue that occurs when an electronic circuit expects an input signal from a peripheral, especially for digital inputs. This means the circuit expects to receive either a HIGH or LOW voltage from the peripheral, essentially acting like a latch. When this "latch" is in an open state (disconnected), electrical noise can build up, causing errors where the circuit mistakenly reads HIGH when it should be LOW, or vice versa. A pull-up or pull-down resistor helps prevent this by strongly defining the default (idle) state of the input. A pull-up resistor forces the default state to HIGH, while a pull-down resistor forces it to LOW.
