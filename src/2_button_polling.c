@@ -3,25 +3,28 @@
 #include "avr_atmega328p.h"
 
 int main(void) {
-	// set DDRB5 as OUTPUT
-	SET_BIT(DDRB, 5);
+	// set PD7 as OUTPUT (LED pin)
+	SET_BIT(DDRD, 7);
 
-	// set DDRB0 as INPUT
-	UNSET_BIT(DDRB, 0);
+	// set PD2 as INPUT (push button pin)
+	UNSET_BIT(DDRD, 2);
 
+	/* Im setting the code button_state as 0(LOW), even tho the default state is
+	 * 1(HIGH) only so that the LED starts turned off */
+	uint8_t button_state = 0;
 	while (1) {
-		/* In the ATmega328P archtecture there are a distinction in the
-		 * registers of GPIO where the PORTB registers mainly represent writing
-		 * to that pin data, and PINB represents reading that from that pin
-		 * data, in this case if are reading the button pin so we can change the
-		 * state of the LED, we must read from the PINB register (addres 0x03 +
-		 * 0x20)*/
-		if (READ_BIT(PINB, 0) != 0) {
-			// set PORTB5 to HIGH
-			SET_BIT(DDRB, 5);
-		} else {
-			// set PORTB5 to LOW
-			UNSET_BIT(DDRB, 5);
+
+		uint8_t last_button_state = button_state;
+		/* Reading PD2 pin every loop cycle means that
+		 * we are working with GPIO polling */
+		button_state = READ_BIT(PIND, 2);
+
+		/* Since the ATmega328P uses by default pull up resistors when the pin
+		 * is set as INPUT, the value read from PIND2 will be by default 1(HIGH)
+		 * this means that the button is only at a 'pressed' state when PIND2
+		 * reads 0(LOW) */
+		if (button_state != last_button_state && button_state == 0) {
+			TOGGLE_BIT(PORTD, 7);
 		}
 	}
 

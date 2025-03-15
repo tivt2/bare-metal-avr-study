@@ -25,8 +25,14 @@
 
 #define READ_BIT(addr, bit) ((GET_ADDR(addr) >> bit) & 0x01)
 
+// REGISTERS
+
 #define PINB 0x23
 #define DDRB 0x24
 #define PORTB 0x25
+
+#define PIND 0x29
+#define DDRD 0x2A
+#define PORTD 0x2B
 
 #endif /* ifndef __AVR_ATMEGA328P__ */
