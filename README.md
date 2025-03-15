@@ -146,3 +146,26 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
   The ATmega328P uses pull-up resistors by default when working with GPIO digital pins as INPUT, this means that when we read the value of the register receiving the signal of the push button(PD2) we will by default receive a 1(HIGH) value for the unpressed button and the 0(LOW) value for the pressed button.
 
   This example will use a something called GPIO polling, it just means that we will constantly be reading the value of an input GPIO pin. More about how it works in the 2_button_polling.c file.
+
+- ### 3_interrupt
+  Next we have some powerful feature, it enables precise control over the program execution [interrupts](https://en.wikipedia.org/wiki/Interrupt). Understanding this is essential to build complex systems since it gives us a really powerful interface to create efficient and responsive programs.
+
+  Essentially an interrupt allows a microcontroller (or any computer) to pause its execution flow, start a specific routine (Interrupt Service Routine) and then resume the execution flow from where it left off. This is essential to handling real-time events.
+
+  The ATmega328P internally maintains what is know as Interrupt Vector Table, its a special piece of memory that maps specific interrupt events to their corresponding interrupt service routine address. When an interrupt happens, the system uses this table and jumps to the corresponding ISR address where it then starts executing the routine, when it is finished a RETI instruction is called, it then returns the program execution from where it left off.
+
+  In the ATmega328P data sheet we can find more info about [reset and interrupt handling](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=15) or [interrupt vector table](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=49).
+
+  In this example we will make an LED blink slowly and when we press a push button the LED will blinky fast for some time and then back to blinking slowly, to make this work an interrupt will be triggered when we press the button, then the program will stop and execute a routine that blinks the LED faster, this means that we will need an [external interrupt](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=53).
+
+  The ATmega328P has many pins to receive external interrupt signals, for this example we will use the INT0 pin (PD2). This means that the EICRA register must be properly configured so that the PD2 pin behaves as INT0. In the [EICRA register description](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=54), we find that to activate the external interrupt 0 (INT0) we must set the SREG I-flag and corresponding interrupt mask.
+
+  The interrupt mask can be found in the EIMSK register, just bellow the EICRA description. The SREG is a special register, knwon as the [AVR status register](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=11), which holds flags that store information about the most recently executed arithmetic instructions, along with the global interrupt flag (which we must enabled).
+
+  Additionally, its important to understand how the gcc-avr compiler handles interrupt service routines. The compiler allows us to use something called [function attributes](https://gcc.gnu.org/onlinedocs/gcc/AVR-Function-Attributes.html), this are special flags that modify the behavior of functions. Since a interrupt handler is not a normal function (it does not return with a RET instruction but instead uses RETI), and is stored in a special location (Interrupt Vector Table), the compiler provides specific flags to handle this.
+
+  The avr_atmega328p.h file has a macro definition that helps us set up interrupt handlers together with some more explanations about the attribute flags and how to use them.
+
+  To implement interrupts, we need to configure the MCU by setting specific registers and writting code that interacts with the compiler. More details can be found in the 3_interrupt.c file.
+
+  The same circuit used in the 2_button_polling is used for this example.
