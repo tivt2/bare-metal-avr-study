@@ -56,4 +56,9 @@
 #define EICRA 0x69
 #define SREG 0x5F
 
+#define TCCR1A 0x80
+#define TCCR1B 0x81
+#define OCR1AL 0x88
+#define OCR1AH 0x89
+
 #endif /* ifndef __AVR_ATMEGA328P__ */

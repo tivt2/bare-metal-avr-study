@@ -137,7 +137,7 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
 
   Since im still learning eletronics, we can take a look at the Arduino built-in examples to guide us on this simple circuits, [button example](https://docs.arduino.cc/built-in-examples/digital/Button/) shows how we can use the PD2 to receive signals of the push down button. For the LED part of the circuit, we could use the built-in LED, but instead let's create a separated LED circuit and connect it to PD7, a circuit example could be found [here](https://docs.arduino.cc/built-in-examples/digital/BlinkWithoutDelay/) just adapt it to PD7.
 
-  ![button polling circuit](images/2_button_polling.png)
+  ![2_button_polling circuit](images/2_button_polling.png)
 
   To correctly read input signals from the button, we must understand pull-up and pull-down resistors, here is a description on [wikipedia](https://en.wikipedia.org/wiki/Pull-up_resistor#:~:text=In%20electronic%20logic%20circuits%2C%20a,absence%20of%20a%20driving%20signal.).
 
@@ -169,3 +169,18 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
   To implement interrupts, we need to configure the MCU by setting specific registers and writting code that interacts with the compiler. More details can be found in the 3_interrupt.c file.
 
   The same circuit used in the 2_button_polling is used for this example.
+
+- 4_timer
+  This example we will be working with timers to be more specific the [16-bit Timer/Counter 1](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=89), a timer/counter is a common peripheral used in many MCUs.
+
+  In the ATmega328P the timer/counter peripheral utilizes a clock source to create a system for acurately comparing timing events. The registers used to work with this timer are, TCNT1 (current timer value), OCR1A/B (timer compare), ICR1 (timer at input signal), TCCR1A/B (timer configuration) and TIMSK1 (timer interrupt).
+
+  To utilize the timer effectively on the ATmega328P, we must understand about the concept of a [prescaler](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=114). A prescaler is a component that divides the input clock frequency, producing a slower clock rate derived from the input clock. If we take as example the ATmega328P CPU clock (16Mhz) the prescaler would be able to receive this clock speed and output a scaled down version of it, this is useful because since our timer register can only hold a number between 0-65335 it would overflow quickly, limiting the duration of measurable events. Utilizing a prescaler and slowing down the 16Mhz clock to for example a 15625hz clock, this would give us a bigger wait time between ticks (making it less precise for smaller events) but a much bigger time window for a 16-bit timer, it would be 65335/15625 seconds (aprox 4.2 seconds).
+
+  The ATmega328P timer/counter uses a prescaler that can divide the input clock for the options 1, 8, 64, 256 and 1024 times.
+
+  To configure the timers, we use the TCCRnA and TCCRnB registers. These registers allows us to configure the prescaler, waveform generation mode (used on PWM) and compare match output modes. The output compare registers OCRnA and OCRnB, are used to define the values at which the timer compares its counter, it then could trigger specific actions at comparisson.
+
+  This example we will blink an LED every second (precisely) using the timer peripheral, we dont need to use a 'hacky' loop to delay events anymore. More on 4_timer.c file.
+
+  ![4_timer circuit](./images/4_timer.png)
