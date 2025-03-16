@@ -177,8 +177,6 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
 
   To utilize the timer effectively on the ATmega328P, we must understand about the concept of a [prescaler](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=114). A prescaler is a component that divides the input clock frequency, producing a slower clock rate derived from the input clock. If we take as example the ATmega328P CPU clock (16Mhz) the prescaler would be able to receive this clock speed and output a scaled down version of it, this is useful because since our timer register can only hold a number between 0-65335 it would overflow quickly, limiting the duration of measurable events. Utilizing a prescaler and slowing down the 16Mhz clock to for example a 15625hz clock, this would give us a bigger wait time between ticks (making it less precise for smaller events) but a much bigger time window for a 16-bit timer, it would be 65335/15625 seconds (aprox 4.2 seconds).
 
-  The ATmega328P timer/counter uses a prescaler that can divide the input clock for the options 1, 8, 64, 256 and 1024 times.
-
   To configure the timers, we use the TCCRnA and TCCRnB registers. These registers allows us to configure the prescaler, waveform generation mode (used on PWM) and compare match output modes. The output compare registers OCRnA and OCRnB, are used to define the values at which the timer compares its counter, it then could trigger specific actions at comparisson.
 
   This example we will blink an LED every second (precisely) using the timer peripheral, we dont need to use a 'hacky' loop to delay events anymore. More on 4_timer.c file.
