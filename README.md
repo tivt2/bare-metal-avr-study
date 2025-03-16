@@ -170,7 +170,7 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
 
   The same circuit used in the 2_button_polling is used for this example.
 
-- 4_timer
+- ### 4_timer
   This example we will be working with timers to be more specific the [16-bit Timer/Counter 1](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=89), a timer/counter is a common peripheral used in many MCUs.
 
   In the ATmega328P the timer/counter peripheral utilizes a clock source to create a system for acurately comparing timing events. The registers used to work with this timer are, TCNT1 (current timer value), OCR1A/B (timer compare), ICR1 (timer at input signal), TCCR1A/B (timer configuration) and TIMSK1 (timer interrupt).
