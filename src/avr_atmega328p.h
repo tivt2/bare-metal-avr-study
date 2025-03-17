@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define CPU_CLOCK 16000000
+
 /* Since we are working with bare metal, when reading an address we need to
  * declare it as volatile or the compiler will not let us control the value of
  * the address directly */
@@ -41,6 +43,7 @@
 
 #define INT0_VEC __vector_1
 #define INT1_VEC __vector_2
+#define TIMER0_OVF_VEC __vector_16
 
 // REGISTERS
 
@@ -55,6 +58,11 @@
 #define EIMSK 0x3D
 #define EICRA 0x69
 #define SREG 0x5F
+
+#define TCCR0A 0x44
+#define TCCR0B 0x45
+#define OCR0A 0x47
+#define TIMSK0 0x6E
 
 #define TCCR1A 0x80
 #define TCCR1B 0x81

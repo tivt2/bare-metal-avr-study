@@ -182,3 +182,18 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
   This example we will blink an LED every second (precisely) using the timer peripheral, we dont need to use a 'hacky' loop to delay events anymore. More on 4_timer.c file.
 
   ![4_timer circuit](./images/4_timer.png)
+
+- ### 5_pwm
+  Now, extending more on the subject of timers, we will use the timer module to create what is known as [PWM signal](https://en.wikipedia.org/wiki/Pulse-width_modulation). This technique is commonly used to control the power delivered to a component.
+
+  In this example we will build something similar to the 4_timer example, but instead of blinking the LED from 0 (LOW) to 1 (HIGH), we will create a 'gradient' effect between these two states, making the LED gradually dim in and out. To explore more on the ATmega328P capabilities, we will use its [8-bit Timer/Counter0 with PWM](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=74). In the last example we used the timer in compare output mode, non-PWM Mode, meaning the timer was only counting and not performing any additional behavior, in this example we will be using the timer to not only generate the output to the LED but also to trigger interrupt routines so we can increment and decrement the duty cycle of the PWM output, more on duty cycle next.
+
+  The idea behind a PWM signal is to use a timer to control the output power delivery over time. To achieve this, we introduce the concept of **duty cycle**, which defines how long the output remains HIGH within a period of time. A duty cycle of 50% will have the output as HIGH for half of the period and LOW for the other half, generating then a perceived half power, if HIGH = 5v half of that we be 2.5v, the PWM signal does not generate 2.5v but instead creates a perceived 2.5v.
+
+  In the ATmega328P timer module supports multiple modes of operation: non-PWM, fast-PWM and phase correct PWM. In fast PWM mode, the timer counts from BOTTOM to TOP and resets back to BOTTOM immediately, producing a sawtooth wave. In phase correct PWM mode, the timer counts from BOTTOM to TOP and then back from TOP to BOTTOM, creating a symmetrical triangular wave. For our example we will be using the simpler fast PWM mode.
+
+  Because we are generating a PWM signal, the timer will not simply count to one second and toggle the LED. Instead, it will generate the perceived power output based on its current duty cycle, that is defined by how the timer is configured, in our case we will make as when we reach OCR0A the OC0A will be set as LOW and after the timer overflow the OC0A will be HIGH.
+
+  More on how this works on 5_timer.c file.
+
+  ![5_pwm circuit](./images/5_pwm.png)
