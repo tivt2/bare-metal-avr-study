@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - --target=avr
+    - -std=gnu99
