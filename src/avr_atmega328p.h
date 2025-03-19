@@ -75,4 +75,11 @@
 #define ADCSRA 0x7A
 #define ADMUX 0x7C
 
+#define UCSR0A 0xC0
+#define UCSR0B 0xC1
+#define UCSR0C 0xC2
+#define UBRR0L 0xC4
+#define UBRR0H 0xC5
+#define UDR0 0xC6
+
 #endif /* ifndef __AVR_ATMEGA328P__ */
