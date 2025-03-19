@@ -44,6 +44,7 @@
 #define INT0_VEC __vector_1
 #define INT1_VEC __vector_2
 #define TIMER0_OVF_VEC __vector_16
+#define ADC_VEC __vector_21
 
 // REGISTERS
 
@@ -68,5 +69,10 @@
 #define TCCR1B 0x81
 #define OCR1AL 0x88
 #define OCR1AH 0x89
+
+#define ADCL 0x78
+#define ADCH 0x79
+#define ADCSRA 0x7A
+#define ADMUX 0x7C
 
 #endif /* ifndef __AVR_ATMEGA328P__ */

@@ -197,3 +197,18 @@ The header file *avr_atmega328p.h* have some quality of life macros to help code
   More on how this works on 5_timer.c file.
 
   ![5_pwm circuit](./images/5_pwm.png)
+
+- ### 6_adc
+  Next we will work with something called [Analog to Digital Converter (ADC)](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=205). This peripheral works by converting an analog signal it to a digital signal allowing us to work with it as a value inside our programs. ADCs are commonly used to read input from components that provide analog values, such as sensors and potentiometers.
+
+  In the ATmega328P the ADC works by converting the analog signal to a 10-bit digital signal value by comparing the input voltage (input pin) to a reference voltage. The conversion process is not instantaneous, because of this the ATmega328P ADC peripheral have 3 modes of operation, single conversion mode, free running mode and trigger mode, each has its own trade-off between response time and the number of cycles required for a conversion.
+
+  A precise conversion requires multiple clock cycles. To make sure the conversion is precise, the ADC uses a prescaler to adjust the input clock speed, where for the ATmega328P the conversion clock speed must be between 50-200Khz for a precise 10-bit digital value conversion. Also since the ADC needs time to complete a conversion and it must be shared by all the analog pins, the ADC utilizes then a multiplexer (MUX) to select the input pin, when a conversion is in place we cannot convert any other analog signals.
+
+  The ADC is a more complex peripheral, is better to study more about it seperately for a deeper understanding. Here is the ADC [wiki](https://en.wikipedia.org/wiki/Analog-to-digital_converter).
+
+  For this example we will build a simple circuit that reads the analog signal from a potentiometer and after converting it to a digital value we dim an LED using a PWM signal based on it.
+
+  For a better understanding on how this works, refer to 6_adc.c file.
+
+  ![6_adc circuit](./images/6_adc.png)
