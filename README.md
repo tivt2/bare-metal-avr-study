@@ -164,3 +164,26 @@ The header file **avr_atmega328p.h** have some quality of life macros to help co
   More about how to configure and use the USART in the 7_usart.c file.
 
   ![7_usart circuit](./images/7_usart.png)
+
+- ### 8_i2c
+  This example we will work with another communication interface, the I2C interface. In summary the I2C is a communication interface utilized for communication between two or more integrated circuits, which utilizes 2 bidirectional bus lines to achieve communication between two or more integrated circuits. In the ATmega328P this interface can be found under [2-wire Serial Interface](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=173).
+
+  Even though the I2C is simple in that it uses only two wires, its operation can be complex. After searching for aditional content on how the I2C operates i found this [doc](https://ece-classes.usc.edu/ee459/library/documents/I2C.pdf) explaining it in the context of the ATmega328P that should help us understand better.
+
+  Before starting the example we need to have another component capable to communicate via I2C, im using an accelerometer and gyroscope module for this example, the [MPU6050](https://components101.com/sensors/mpu6050-module). But i believe any other component could be used instead with minor changes to the code since this will be a more generic example.
+
+  Each I2C device has a unique 7-bit address, with the 8th bit reserved for indicating whether the operation is a read or write.
+
+  All devices utilizing the I2C have an identifiable address and this value is fixed by the manufacturer of the device. This address is how we can target the device for communication, each I2C device has a unique 7-bit address, with the 8th bit reserved for indicating whether the operation is a read or write. For the MPU6050 the address can be found on its [data sheet](https://components101.com/sites/default/files/component_datasheet/MPU6050-DataSheet.pdf#page=15), being the address **0b01101000** in binary or **0x68** in hex.
+
+  The 2 bus lines utilized by the I2C interface are a clock line (SCL) and a data line (SDA). Some terminology will help us understand how it works, the I2C have 4 distinct notions of a device, **master** is the device that initiates the I2C and is the source of the SCL, **slave** is the device addressed by the master, **transmitter** is the device writing data to the SDA bus line and **receiver** is the device reading from the SDA line.
+
+  For the ATmega328P, when it operates as the master it utilizes the [Bit Rate Generator Unit](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=180) in order to control the clock provided to the I2C SCL line. Similar to USART, the SCL clock is configured by writing to the TWBR register a value that will change the MCU clock and output a prescaled clock, this clock must match the requirements of the components the ATmega328P it is interacting with. The MPU6050 module MAX SCL clock can be found [here](https://components101.com/sites/default/files/component_datasheet/MPU6050-DataSheet.pdf#page=15) under parameter I2C Operating Frequency, being 100kHz for standard-mode and 400kHz for fast-mode.
+
+  Better than trying to explain how the I2C communication happen, there is this reference under [Using the TWI](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf#page=181) where it goes thru an example and describes step by step what is happening in order for it all to work and its followed by some code examples.
+
+  For this example we will first initialize serial communication with our computer using [USART](###7_usart) and initialize a I2C communication with the MPU6050 accelerometer and gyroscope module. After initialization we will constantly read the values of from the MPU6050 and send it to our computer via USART so it can be displayed and we can visually see changes when we interact with the MPU6050.
+
+  More about I2C and how we make it work on the 8_i2c.c file.
+
+  ![8_i2c circuit](./images/8_i2c.png)
