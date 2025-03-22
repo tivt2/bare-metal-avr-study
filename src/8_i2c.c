@@ -3,6 +3,7 @@
 #include "avr_atmega328p.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BAUD 9600
 #define UBRR 103 // ((CPU_CLOCK / 16 / BAUD) - 1)
@@ -105,28 +106,28 @@ void I2C_stop() {
 	}
 }
 
-void I2C_master_transmitt(uint8_t addr) {
+void I2C_master_transmitter(uint8_t addr) {
 	GET_ADDR(TWDR) = (addr << 1);
 	GET_ADDR(TWCR) = (1 << 2) | (1 << 7);
 	while (!READ_BIT(TWCR, 7)) {
 	}
 	if ((GET_ADDR(TWSR) & 0xF8) != 0x18) {
 		char buf[16] = "addr: ";
-		USART_println("Error: master transmitt");
+		USART_println("Error: master transmitter");
 		utoa(addr, &buf[6], 16);
 		USART_println(buf);
 		ERROR();
 	}
 }
 
-void I2C_master_receive(uint8_t addr) {
+void I2C_master_receiver(uint8_t addr) {
 	GET_ADDR(TWDR) = (addr << 1) | 0x01;
 	GET_ADDR(TWCR) = (1 << 2) | (1 << 7);
 	while (!READ_BIT(TWCR, 7)) {
 	}
 	if ((GET_ADDR(TWSR) & 0xF8) != 0x40) {
 		char buf[16] = "addr: ";
-		USART_println("Error: master receive");
+		USART_println("Error: master receiver");
 		utoa(addr, &buf[6], 16);
 		USART_println(buf);
 		ERROR();
@@ -188,7 +189,7 @@ int main(void) {
 	GET_ADDR(TWBR) = twbr;
 
 	I2C_start();
-	I2C_master_transmitt(mpu6050_addr);
+	I2C_master_transmitter(mpu6050_addr);
 	I2C_write(0x6B);
 	I2C_write(0x00);
 	I2C_stop();
@@ -196,19 +197,32 @@ int main(void) {
 	while (1) {
 		I2C_start();
 
-		I2C_master_transmitt(mpu6050_addr);
+		I2C_master_transmitter(mpu6050_addr);
 		uint8_t mpu6050_gyro_xout_h_addr = 0x43;
 		I2C_write(mpu6050_gyro_xout_h_addr);
 		I2C_restart();
-		I2C_master_receive(mpu6050_addr);
-		uint8_t high = I2C_read();
-		uint16_t gyro_x = (high << 8) | I2C_read_last();
+		I2C_master_receiver(mpu6050_addr);
+		uint8_t gyro_x_high = I2C_read();
+		uint16_t gyro_x = (gyro_x_high << 8) | I2C_read();
+		uint8_t gyro_y_high = I2C_read();
+		uint16_t gyro_y = (gyro_y_high << 8) | I2C_read();
+		uint8_t gyro_z_high = I2C_read();
+		uint16_t gyro_z = (gyro_z_high << 8) | I2C_read_last();
 		I2C_stop();
 
-		char data_str[16] = "gyro_x: ";
-		utoa(gyro_x, &data_str[8], 10);
+		char msg[64] = "\0";
+		char buff[16] = "\0";
+		utoa(gyro_x, buff, 10);
+		strcpy(&msg[strlen(msg)], "gyro => x: ");
+		strcpy(&msg[strlen(msg)], buff);
+		utoa(gyro_y, buff, 10);
+		strcpy(&msg[strlen(msg)], ", y: ");
+		strcpy(&msg[strlen(msg)], buff);
+		utoa(gyro_z, buff, 10);
+		strcpy(&msg[strlen(msg)], ", z: ");
+		strcpy(&msg[strlen(msg)], buff);
 
-		USART_println(data_str);
+		USART_println(msg);
 	}
 
 	return 0;
