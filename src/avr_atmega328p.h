@@ -63,7 +63,9 @@
 #define TCCR0A 0x44
 #define TCCR0B 0x45
 #define OCR0A 0x47
+#define TCNT0 0x46
 #define TIMSK0 0x6E
+#define TIFR0 0x35
 
 #define TCCR1A 0x80
 #define TCCR1B 0x81
@@ -81,5 +83,12 @@
 #define UBRR0L 0xC4
 #define UBRR0H 0xC5
 #define UDR0 0xC6
+
+#define TWBR 0xB8
+#define TWSR 0xB9
+#define TWAR 0xBA
+#define TWDR 0xBB
+#define TWCR 0xBC
+#define TWAMR 0xBD
 
 #endif /* ifndef __AVR_ATMEGA328P__ */
