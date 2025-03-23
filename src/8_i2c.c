@@ -275,25 +275,32 @@ int main(void) {
 		I2C_write(MPU6050_GYRO_XOUT_H_addr);
 		I2C_restart();
 		I2C_master_receiver(mpu6050_addr);
+		// MPU6050 gyro values are 16-bit 2's complement
 		uint8_t gyro_x_high = I2C_read();
-		uint16_t gyro_x = (gyro_x_high << 8) | I2C_read();
+		int16_t gyro_x = (gyro_x_high << 8) | I2C_read();
 		uint8_t gyro_y_high = I2C_read();
-		uint16_t gyro_y = (gyro_y_high << 8) | I2C_read();
+		int16_t gyro_y = (gyro_y_high << 8) | I2C_read();
 		uint8_t gyro_z_high = I2C_read();
-		uint16_t gyro_z = (gyro_z_high << 8) | I2C_read_last();
+		int16_t gyro_z = (gyro_z_high << 8) | I2C_read_last();
 		I2C_stop();
+
+		/* MPU6050 gyro is configured by default as -+250dgre/s, this will
+		 * convert the 2's complement value into dgree/s value */
+		float gyro_x_dgre = gyro_x / 32768.0 * 250.0;
+		float gyro_y_dgre = gyro_y / 32768.0 * 250.0;
+		float gyro_z_dgre = gyro_z / 32768.0 * 250.0;
 
 		/* String formatting to send a single line with the gyro information via
 		 * USART */
 		char msg[64] = "\0";
 		char buff[16] = "\0";
-		utoa(gyro_x, buff, 10);
-		strcpy(&msg[strlen(msg)], "gyro => x: ");
+		dtostrf(gyro_x_dgre, 5, 2, buff);
+		strcpy(&msg[strlen(msg)], "x: ");
 		strcpy(&msg[strlen(msg)], buff);
-		utoa(gyro_y, buff, 10);
+		dtostrf(gyro_y_dgre, 5, 2, buff);
 		strcpy(&msg[strlen(msg)], ", y: ");
 		strcpy(&msg[strlen(msg)], buff);
-		utoa(gyro_z, buff, 10);
+		dtostrf(gyro_z_dgre, 5, 2, buff);
 		strcpy(&msg[strlen(msg)], ", z: ");
 		strcpy(&msg[strlen(msg)], buff);
 
